@@ -3,6 +3,7 @@ import React from 'react';
 // PUBLIC_INTERFACE
 export const ROUTES = [
   { path: 'upload', label: 'Upload' },
+  { path: 'generate', label: 'Generate' },
   { path: 'jobs', label: 'Jobs' },
   { path: 'artifacts', label: 'Artifacts' },
   { path: 'execute', label: 'Execute' },

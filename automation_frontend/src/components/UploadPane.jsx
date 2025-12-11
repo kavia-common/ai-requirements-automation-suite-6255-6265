@@ -20,12 +20,21 @@ export default function UploadPane({ onUploaded }) {
       setMessage('Please choose a .xlsx or .csv file.');
       return;
     }
+    // Validate extension client-side to clearly indicate .csv support
+    const name = file.name?.toLowerCase() || '';
+    if (!name.endsWith('.xlsx') && !name.endsWith('.csv')) {
+      setMessage('Unsupported file type. Please upload a .xlsx or .csv file.');
+      return;
+    }
+
     setBusy(true);
     setMessage('');
     try {
       const res = await uploadJob(file);
-      setMessage(`Upload successful. Job ID: ${res.job_id}`);
-      onUploaded && onUploaded(res.job_id);
+      const jobId = res.job_id || res.id;
+      setMessage(`Upload successful. Job ID: ${jobId}`);
+      try { localStorage.setItem('last_job_id', jobId); } catch {}
+      onUploaded && onUploaded(jobId);
     } catch (err) {
       setMessage(err.message || 'Upload failed');
     } finally {
@@ -41,7 +50,7 @@ export default function UploadPane({ onUploaded }) {
         <input
           aria-label="SRS File"
           type="file"
-          accept=".xlsx,.csv"
+          accept=".xlsx,.csv,text/csv"
           onChange={onChange}
           disabled={busy}
         />

@@ -7,18 +7,22 @@ import JobsList from './components/JobsList';
 import ArtifactsViewer from './components/ArtifactsViewer';
 import ExecutionControls from './components/ExecutionControls';
 import AllureEmbed from './components/AllureEmbed';
+import GeneratePane from './components/GeneratePane';
 import { ROUTES } from './routes';
 
 // PUBLIC_INTERFACE
 function App() {
   /** App renders a simple dashboard with left nav, header, and main content. */
   const [active, setActive] = useState('upload');
-  const [selectedJobId, setSelectedJobId] = useState('');
+  const [selectedJobId, setSelectedJobId] = useState(localStorage.getItem('last_job_id') || '');
   const [theme, setTheme] = useState('light');
 
   const onUploaded = (jobId) => {
+    // Persist last uploaded job id
+    try { localStorage.setItem('last_job_id', jobId); } catch {}
     setSelectedJobId(jobId);
-    setActive('jobs');
+    // Move user to Generate tab per two-step flow
+    setActive('generate');
   };
 
   const headerTitle = useMemo(() => {
@@ -82,13 +86,29 @@ function App() {
           </div>
         )}
 
+        {active === 'generate' && (
+          <div className="grid">
+            <div className="span-12">
+              <GeneratePane
+                initialJobId={selectedJobId}
+                onGenerated={(jobId) => {
+                  setSelectedJobId(jobId);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {active === 'jobs' && (
           <div className="grid">
             <div className="span-12">
               <div className="card">
                 <h2 className="card-title">{headerTitle}</h2>
                 <p className="card-subtitle">Polling every few seconds for updates.</p>
-                <JobsList onSelect={(id) => setSelectedJobId(id)} />
+                <JobsList onSelect={(id) => {
+                  setSelectedJobId(id);
+                  try { localStorage.setItem('last_job_id', id); } catch {}
+                }} />
               </div>
             </div>
           </div>
