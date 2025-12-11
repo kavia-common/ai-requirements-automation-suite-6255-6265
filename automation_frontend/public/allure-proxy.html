@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Allure Report Proxy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body, iframe { margin:0; padding:0; height:100%; width:100%; border:0; }
+  </style>
+</head>
+<body>
+  <iframe id="allure" src="" frameborder="0"></iframe>
+  <script>
+    (function() {
+      const params = new URLSearchParams(location.search);
+      const jobId = params.get('job');
+      const base = (window.REACT_APP_API_BASE || '');
+      if (!jobId) {
+        document.body.innerHTML = '<p style="font:14px sans-serif;padding:12px;">Missing job parameter.</p>';
+        return;
+      }
+      document.getElementById('allure').src = base + '/api/jobs/' + encodeURIComponent(jobId) + '/allure';
+    })();
+  </script>
+</body>
+</html>
